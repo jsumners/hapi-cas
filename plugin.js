@@ -1,7 +1,7 @@
 'use strict';
 
 const debug = require('debug')('hapi-cas:main');
-const CAS = require('@jsumners/simple-cas-client');
+const CAS = require('simple-cas-interface');
 const Hoek = require('hoek');
 const Joi = require('joi');
 const Boom = require('boom');
