@@ -1,0 +1,31 @@
+{
+  "name": "hapi-cas",
+  "version": "0.1.0",
+  "description": "An authorization plugin for Hapi that implements JASIG CAS authentication.",
+  "main": "plugin.js",
+  "scripts": {
+    "test": "DEBUG=hapi-cas:* node test/index.js",
+    "doc": "jsdoc -R Readme.md -d doc plugin.js"
+  },
+  "keywords": [
+    "hapi",
+    "cas",
+    "jasig",
+    "apereo"
+  ],
+  "author": "James Sumners",
+  "license": "MIT",
+  "dependencies": {
+    "boom": "^3.0.0",
+    "debug": "^2.2.0",
+    "hoek": "^3.0.4",
+    "joi": "^7.0.1",
+    "simple-cas-interface": "file:../simple-cas-client"
+  },
+  "devDependencies": {
+    "hapi": "^11.1.2",
+    "hapi-server-session": "^2.0.4",
+    "jsdoc": "^3.4.0",
+    "request": "^2.67.0"
+  }
+}
