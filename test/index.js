@@ -12,7 +12,7 @@ server.connection({
 
 server.register(
   {
-    register: require('hapi-server-session'),
+    register: require('hapi-easy-session'),
     options: {
       cookie: {
         isSecure: false
