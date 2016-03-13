@@ -30,6 +30,8 @@ const Boom = require('boom');
  * @property {array} [includeHeaders=['cookie']] The headers to include in
  *  redirections. This list <em>must</em> include the header your session
  *  manager uses for tracking session identifiers.
+ * @property {boolean} [strictSSL=true] Determines if the client will require
+ *  valid remote SSL certificates or not.
  */
 
 const optsSchema = Joi.object().keys({
@@ -39,7 +41,8 @@ const optsSchema = Joi.object().keys({
   casAsGateway: Joi.boolean().default(false),
   localAppUrl: Joi.string().uri({scheme: ['http', 'https']}).required(),
   endPointPath: Joi.string().regex(/^\/[\w\W\/]+\/?$/).required(),
-  includeHeaders: Joi.array().items(Joi.string()).default(['cookie'])
+  includeHeaders: Joi.array().items(Joi.string()).default(['cookie']),
+  strictSSL: Joi.boolean().default(true)
 });
 
 /**
@@ -70,7 +73,8 @@ function casPlugin(server, options) {
     serviceUrl: _options.value.localAppUrl + _options.value.endPointPath,
     protocolVersion: _options.value.casProtocolVersion,
     method: _options.value.casRequestMethod,
-    useGateway: _options.value.casAsGateway
+    useGateway: _options.value.casAsGateway,
+    strictSSL: _options.value.strictSSL
   };
   const cas = new CAS(casOptions);
 
