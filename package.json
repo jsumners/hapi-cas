@@ -16,16 +16,16 @@
   "author": "James Sumners",
   "license": "MIT",
   "dependencies": {
-    "boom": "^3.0.0",
+    "boom": "^3.1.0",
     "debug": "^2.2.0",
     "hoek": "^3.0.4",
     "joi": "^8.0.0",
     "simple-cas-interface": "^0.1.1"
   },
   "devDependencies": {
-    "hapi": "^11.1.2",
-    "hapi-server-session": "^2.0.4",
+    "hapi": "^13.0.0",
+    "hapi-easy-session": "^0.1.0",
     "jsdoc": "^3.4.0",
-    "request": "^2.67.0"
+    "request": "^2.69.0"
   }
 }
