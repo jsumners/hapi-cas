@@ -93,8 +93,7 @@ function casPlugin(server, options) {
       return addHeaders(request, reply(boom));
     }
 
-    const response = reply(
-      cas.validateServiceTicket(ticket).then(function (result) {
+    return cas.validateServiceTicket(ticket).then(function (result) {
         debug('Service ticket validated:');
         debug('%j', result);
         const redirectPath = request.session.requestPath;
@@ -103,16 +102,13 @@ function casPlugin(server, options) {
         request.session.username = result.user;
         request.session.attributes = result.attributes || {};
 
-        return response.redirect(redirectPath);
+        return addHeaders(request, reply(result).redirect(redirectPath));
       })
       .catch(function caught(error) {
         debug('Service ticket validation failed:');
         debug('%j', error);
-        return Boom.forbidden(error.message);
-      })
-    );
-
-    return addHeaders(request, response);
+        return addHeaders(request, reply(Boom.forbidden(error.message)));
+      });
   }
 
   server.route({
