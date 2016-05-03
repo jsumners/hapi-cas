@@ -110,7 +110,7 @@ function casPlugin(server, options) {
           request.session.rawCas = result;
         }
 
-        return addHeaders(request, reply(result).redirect(redirectPath));
+        return addHeaders(request, reply(result)).redirect(redirectPath);
       })
       .catch(function caught(error) {
         debug('Service ticket validation failed:');
