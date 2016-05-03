@@ -102,6 +102,9 @@ function casPlugin(server, options) {
         request.session.username = result.user;
         request.session.attributes = result.attributes || {};
 
+		// Save raw cas result for processing by client
+        request.session.raw_cas = result;
+
         return addHeaders(request, reply(result).redirect(redirectPath));
       })
       .catch(function caught(error) {
