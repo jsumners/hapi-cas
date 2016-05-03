@@ -33,7 +33,7 @@ const Boom = require('boom');
  * @property {boolean} [strictSSL=true] Determines if the client will require
  *  valid remote SSL certificates or not.
  * @property {boolean} [saveRawCAS=false] If true the CAS result will be
- *  saved into session.raw_cas
+ *  saved into session.rawCas
  */
 
 const optsSchema = Joi.object().keys({
@@ -107,7 +107,7 @@ function casPlugin(server, options) {
 
         // Save raw cas result for processing by client
         if (_options.value.saveRawCAS) {
-          request.session.raw_cas = result;
+          request.session.rawCas = result;
         }
 
         return addHeaders(request, reply(result).redirect(redirectPath));
