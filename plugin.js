@@ -32,6 +32,8 @@ const Boom = require('boom');
  *  manager uses for tracking session identifiers.
  * @property {boolean} [strictSSL=true] Determines if the client will require
  *  valid remote SSL certificates or not.
+ * @property {boolean} [saveRawCAS=false] If true the CAS result will be
+ *  saved into session.rawCas
  */
 
 const optsSchema = Joi.object().keys({
@@ -42,7 +44,8 @@ const optsSchema = Joi.object().keys({
   localAppUrl: Joi.string().uri({scheme: ['http', 'https']}).required(),
   endPointPath: Joi.string().regex(/^\/[\w\W\/]+\/?$/).required(),
   includeHeaders: Joi.array().items(Joi.string()).default(['cookie']),
-  strictSSL: Joi.boolean().default(true)
+  strictSSL: Joi.boolean().default(true),
+  saveRawCAS: Joi.boolean().default(false)
 });
 
 /**
@@ -102,7 +105,12 @@ function casPlugin(server, options) {
         request.session.username = result.user;
         request.session.attributes = result.attributes || {};
 
-        return addHeaders(request, reply(result).redirect(redirectPath));
+        // Save raw cas result for processing by client
+        if (_options.value.saveRawCAS) {
+          request.session.rawCas = result;
+        }
+
+        return addHeaders(request, reply(result)).redirect(redirectPath);
       })
       .catch(function caught(error) {
         debug('Service ticket validation failed:');

@@ -26,7 +26,8 @@ server.register(require(__dirname + '/../plugin'), (err) => {
     const options = {
       casServerUrl: 'http://127.0.0.1:9000',
       localAppUrl: 'http://127.0.0.1:8080',
-      endPointPath: '/casHandler'
+      endPointPath: '/casHandler',
+      saveRawCAS: true
     };
     server.auth.strategy('casauth', 'cas', options);
   }
@@ -36,7 +37,7 @@ server.route({
   method: 'GET',
   path: '/foo',
   handler: function (request, reply) {
-    return reply(null, `username = ${request.session.username}`);
+    return reply(request.session);
   },
   config: {
     auth: {
@@ -60,7 +61,9 @@ function testServerCB() {
       server.stop(function () {
         console.log('test server stopped');
         const assert = require('assert');
-        assert.equal(body, 'username = foouser');
+        const json = JSON.parse(body);
+        assert.equal(json.username, 'foouser');
+        assert.equal(json.rawCas['user_uuid'], '1234567-ghsld');
         console.log('test is successful');
       });
     }
