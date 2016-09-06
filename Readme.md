@@ -41,20 +41,23 @@ server.register(require('hapi-cas'), (err) => {
   }
 );
 
-server.route({
-  method: 'GET',
-  path: '/foo',
-  handler: function (request, reply) {
-    // "username" would have been set from the XML returned by
-    // the remote CAS server
-    return reply(null, `username = ${request.session.username}`);
-  },
-  config: {
-    auth: {
-      strategy: 'casauth'
+// https://github.com/hapijs/discuss/issues/349
+setImmediate(() => {
+  server.route({
+    method: 'GET',
+    path: '/foo',
+    handler: function (request, reply) {
+      // "username" would have been set from the XML returned by
+      // the remote CAS server
+      return reply(null, `username = ${request.session.username}`);
+    },
+    config: {
+      auth: {
+        strategy: 'casauth'
+      }
     }
-  }
-});
+  });
+})
 ```
 
 # License

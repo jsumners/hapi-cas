@@ -33,17 +33,19 @@ server.register(require(__dirname + '/../plugin'), (err) => {
   }
 );
 
-server.route({
-  method: 'GET',
-  path: '/foo',
-  handler: function (request, reply) {
-    return reply(request.session);
-  },
-  config: {
-    auth: {
-      strategy: 'casauth'
+setImmediate(() => {
+  server.route({
+    method: 'GET',
+    path: '/foo',
+    handler: function (request, reply) {
+      return reply(request.session);
+    },
+    config: {
+      auth: {
+        strategy: 'casauth'
+      }
     }
-  }
+  });
 });
 
 function testServerCB() {
