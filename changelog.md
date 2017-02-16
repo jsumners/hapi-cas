@@ -1,3 +1,6 @@
+### 0.5.2
++ Actually update package.json with a version bump.
+
 ### 0.5.1
 + Update dependencies
 + Add check for `response.header` function when attempting to retain headers.
