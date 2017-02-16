@@ -1,10 +1,11 @@
-'use strict';
+'use strict'
 
-const debug = require('debug')('hapi-cas:main');
-const CAS = require('simple-cas-interface');
-const Hoek = require('hoek');
-const Joi = require('joi');
-const Boom = require('boom');
+const path = require('path')
+const debug = require('debug')('hapi-cas:main')
+const CAS = require('simple-cas-interface')
+const Hoek = require('hoek')
+const Joi = require('joi')
+const Boom = require('boom')
 
 /**
  * <p>Defines the possible options for the plugin.</p>
@@ -38,15 +39,15 @@ const Boom = require('boom');
 
 const optsSchema = Joi.object().keys({
   casServerUrl: Joi.string().uri({sheme: ['http', 'https']}).required(),
-  casProtocolVersion: Joi.number().valid([1,2,3]).default(2.0),
+  casProtocolVersion: Joi.number().valid([1, 2, 3]).default(2.0),
   casRequestMethod: Joi.string().valid(['GET', 'POST']).default('GET'),
   casAsGateway: Joi.boolean().default(false),
   localAppUrl: Joi.string().uri({scheme: ['http', 'https']}).required(),
-  endPointPath: Joi.string().regex(/^\/[\w\W\/]+\/?$/).required(),
+  endPointPath: Joi.string().regex(/^\/[\w\W/]+\/?$/).required(),
   includeHeaders: Joi.array().items(Joi.string()).default(['cookie']),
   strictSSL: Joi.boolean().default(true),
   saveRawCAS: Joi.boolean().default(false)
-});
+})
 
 /**
  * <p>Provides an authentication plugin for the Hapi framework that implements
@@ -65,11 +66,11 @@ const optsSchema = Joi.object().keys({
  * @throws {AssertionError} When an invalid options object is provided or if
  *  there isn't a session manager registered with the Hapi server.
  */
-function casPlugin(server, options) {
-  Hoek.assert(options, 'Missing CAS auth scheme options');
-  const _options = Joi.validate(options, optsSchema);
-  Hoek.assert(_options, 'Options object does not pass schema validation');
-  debug('validated options: %j', _options.value);
+function casPlugin (server, options) {
+  Hoek.assert(options, 'Missing CAS auth scheme options')
+  const _options = Joi.validate(options, optsSchema)
+  Hoek.assert(_options, 'Options object does not pass schema validation')
+  debug('validated options: %j', _options.value)
 
   const casOptions = {
     serverUrl: _options.value.casServerUrl,
@@ -78,46 +79,46 @@ function casPlugin(server, options) {
     method: _options.value.casRequestMethod,
     useGateway: _options.value.casAsGateway,
     strictSSL: _options.value.strictSSL
-  };
-  const cas = new CAS(casOptions);
+  }
+  const cas = new CAS(casOptions)
 
-  function addHeaders(request, response) {
-    if (!response || !response.header || typeof response.header !== 'function') return response;
+  function addHeaders (request, response) {
+    if (!response || !response.header || typeof response.header !== 'function') return response
     for (let h of _options.value.includeHeaders) {
-      response.header(h, request.headers[h]);
+      response.header(h, request.headers[h])
     }
-    return response;
+    return response
   }
 
-  function gethandler(request, reply) {
-    const ticket = request.query.ticket;
+  function gethandler (request, reply) {
+    const ticket = request.query.ticket
     if (!ticket) {
-      debug('No ticket query parameter supplied to CAS handler end point');
-      const boom = Boom.badRequest('Missing ticket parameter');
-      return addHeaders(request, reply(boom));
+      debug('No ticket query parameter supplied to CAS handler end point')
+      const boom = Boom.badRequest('Missing ticket parameter')
+      return addHeaders(request, reply(boom))
     }
 
     return cas.validateServiceTicket(ticket).then(function (result) {
-        debug('Service ticket validated:');
-        debug('%j', result);
-        const redirectPath = request.session.requestPath;
-        delete request.session.requestPath;
-        request.session.isAuthenticated = true;
-        request.session.username = result.user;
-        request.session.attributes = result.attributes || {};
+      debug('Service ticket validated:')
+      debug('%j', result)
+      const redirectPath = request.session.requestPath
+      delete request.session.requestPath
+      request.session.isAuthenticated = true
+      request.session.username = result.user
+      request.session.attributes = result.attributes || {}
 
-        // Save raw cas result for processing by client
-        if (_options.value.saveRawCAS) {
-          request.session.rawCas = result;
-        }
+      // Save raw cas result for processing by client
+      if (_options.value.saveRawCAS) {
+        request.session.rawCas = result
+      }
 
-        return addHeaders(request, reply(result)).redirect(redirectPath);
-      })
-      .catch(function caught(error) {
-        debug('Service ticket validation failed:');
-        debug('%j', error);
-        return addHeaders(request, reply(Boom.forbidden(error.message)));
-      });
+      return addHeaders(request, reply(result)).redirect(redirectPath)
+    })
+    .catch(function caught (error) {
+      debug('Service ticket validation failed:')
+      debug('%j', error)
+      return addHeaders(request, reply(Boom.forbidden(error.message)))
+    })
   }
 
   server.route({
@@ -131,39 +132,39 @@ function casPlugin(server, options) {
         expiresIn: 0
       }
     }
-  });
+  })
 
-  const scheme = {};
-  scheme.authenticate = function casAuth(request, reply) {
-    const session = request.session;
+  const scheme = {}
+  scheme.authenticate = function casAuth (request, reply) {
+    const session = request.session
     if (!session) {
-      debug('No session provider registered!');
+      debug('No session provider registered!')
       return reply(Boom.notImplemented(
         'hapi-cas requires a registered Hapi session provider'
-      ));
+      ))
     }
 
     const credentials = {
       username: session.username,
       attributes: session.attributes
-    };
-    debug('Credentials: %j', credentials);
+    }
+    debug('Credentials: %j', credentials)
 
     if (session.isAuthenticated) {
-      debug('User authenticated by session lookup');
-      return reply.continue({credentials: credentials});
+      debug('User authenticated by session lookup')
+      return reply.continue({credentials: credentials})
     }
 
-    debug('Redirecting auth to: %s', cas.loginUrl);
-    session.requestPath = request.path;
+    debug('Redirecting auth to: %s', cas.loginUrl)
+    session.requestPath = request.path
     return addHeaders(
       request,
       reply('cas redirect', null, {credentials: credentials})
     )
-    .redirect(cas.loginUrl);
-  };
+    .redirect(cas.loginUrl)
+  }
 
-  return scheme;
+  return scheme
 }
 
 /**
@@ -176,10 +177,10 @@ function casPlugin(server, options) {
  * @returns {function} The registration finished callback function.
  */
 exports.register = function (server, options, next) {
-  server.auth.scheme('cas', casPlugin);
-  return next();
-};
+  server.auth.scheme('cas', casPlugin)
+  return next()
+}
 
 module.exports.register.attributes = {
-    pkg: require(__dirname + '/package.json')
-};
+  pkg: require(path.join(__dirname, 'package.json'))
+}

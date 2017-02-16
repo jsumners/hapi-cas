@@ -4,7 +4,7 @@
   "description": "An authorization plugin for Hapi that implements JASIG CAS authentication.",
   "main": "plugin.js",
   "scripts": {
-    "test": "DEBUG=hapi-cas:* node test/index.js",
+    "test": "standard plugin.js test/*.js && DEBUG=hapi-cas:* node test/index.js",
     "doc": "jsdoc -R Readme.md -d doc plugin.js"
   },
   "keywords": [
@@ -26,6 +26,7 @@
     "hapi": "^16.1.0",
     "hapi-easy-session": "^0.2.2",
     "jsdoc": "^3.4.3",
-    "request": "^2.79.0"
+    "request": "^2.79.0",
+    "standard": "^8.6.0"
   }
 }
