@@ -1,3 +1,8 @@
+### 0.5.1
++ Update dependencies
++ Add check for `response.header` function when attempting to retain headers.
+  For some unknown reason, the response object doesn't always have this method.
+
 ### 0.5.0
 + Hapi [version 15.0.1][hapi1501] made `server.register` a definitively
   asynchronous method. As a result, the test application for `hapi-cas` was
