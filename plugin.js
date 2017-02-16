@@ -82,6 +82,7 @@ function casPlugin(server, options) {
   const cas = new CAS(casOptions);
 
   function addHeaders(request, response) {
+    if (!response || !response.header || typeof response.header !== 'function') return response;
     for (let h of _options.value.includeHeaders) {
       response.header(h, request.headers[h]);
     }
