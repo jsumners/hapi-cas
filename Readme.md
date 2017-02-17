@@ -5,7 +5,7 @@ implements [CAS][cas] authentication. This module requires a session manger
 plugin to be registered with the Hapi server under which the *hapi-cas* plugin
 is registered. The [hapi-server-session][hss] is known to work.
 
-The API is fully documented via [jsdoc][jsdoc] in the [doc directory](doc/).
+The API is fully documented in the [api.md](api.md) document.
 
 [hapi]: http://hapijs.com/
 [cas]: http://jasig.github.io/cas/

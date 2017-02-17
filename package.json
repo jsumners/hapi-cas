@@ -5,7 +5,7 @@
   "main": "plugin.js",
   "scripts": {
     "test": "standard plugin.js test/*.js && DEBUG=hapi-cas:* node test/index.js",
-    "doc": "jsdoc -R Readme.md -d doc plugin.js"
+    "doc": "jsdoc2md plugin.js > api.md"
   },
   "keywords": [
     "hapi",
@@ -26,6 +26,7 @@
     "hapi": "^16.1.0",
     "hapi-easy-session": "^0.2.2",
     "jsdoc": "^3.4.3",
+    "jsdoc-to-markdown": "^3.0.0",
     "pino": "^4.0.0",
     "request": "^2.79.0",
     "standard": "^8.6.0"
