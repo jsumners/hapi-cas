@@ -1,3 +1,11 @@
+### 0.6.0
++ Update dependencies.
++ Migrate documentation to api.md document.
++ Convert code to standardjs.com style.
++ Switch to using [abstract-logging][al] instead of `debug`.
+
+  [al]: https://npm.im/abstract-logging
+
 ### 0.5.2
 + Actually update package.json with a version bump.
 
