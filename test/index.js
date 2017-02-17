@@ -1,6 +1,8 @@
 'use strict'
 
 const path = require('path')
+const pino = require('pino')
+const log = pino({prettyPrint: true, level: 'trace'})
 const casServer = require(path.join(__dirname, 'lib', 'casServer'))
 
 const hapi = require('hapi')
@@ -29,7 +31,8 @@ server.register(require(path.join(__dirname, '..', 'plugin')), (err) => {
     casServerUrl: 'http://127.0.0.1:9000',
     localAppUrl: 'http://127.0.0.1:8080',
     endPointPath: '/casHandler',
-    saveRawCAS: true
+    saveRawCAS: true,
+    logger: log
   }
   server.auth.strategy('casauth', 'cas', options)
 })

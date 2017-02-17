@@ -1,11 +1,11 @@
 'use strict'
 
 const path = require('path')
-const debug = require('debug')('hapi-cas:main')
 const CAS = require('simple-cas-interface')
 const Hoek = require('hoek')
 const Joi = require('joi')
 const Boom = require('boom')
+let log = require('abstract-logging')
 
 /**
  * <p>Defines the possible options for the plugin.</p>
@@ -35,6 +35,8 @@ const Boom = require('boom')
  *  valid remote SSL certificates or not.
  * @property {boolean} [saveRawCAS=false] If true the CAS result will be
  *  saved into session.rawCas
+ * @property {object} [logger=undefined] An instance of a logger that conforms
+ *  to the Log4j interface. We recommend {@link https://npm.im/pino}
  */
 
 const optsSchema = Joi.object().keys({
@@ -46,7 +48,8 @@ const optsSchema = Joi.object().keys({
   endPointPath: Joi.string().regex(/^\/[\w\W/]+\/?$/).required(),
   includeHeaders: Joi.array().items(Joi.string()).default(['cookie']),
   strictSSL: Joi.boolean().default(true),
-  saveRawCAS: Joi.boolean().default(false)
+  saveRawCAS: Joi.boolean().default(false),
+  logger: Joi.object().optional()
 })
 
 /**
@@ -70,7 +73,10 @@ function casPlugin (server, options) {
   Hoek.assert(options, 'Missing CAS auth scheme options')
   const _options = Joi.validate(options, optsSchema)
   Hoek.assert(_options, 'Options object does not pass schema validation')
-  debug('validated options: %j', _options.value)
+  log = (_options.value.logger)
+    ? _options.value.logger.child({module: 'hapi-cas'})
+    : log
+  log.trace('validated options')
 
   const casOptions = {
     serverUrl: _options.value.casServerUrl,
@@ -78,7 +84,8 @@ function casPlugin (server, options) {
     protocolVersion: _options.value.casProtocolVersion,
     method: _options.value.casRequestMethod,
     useGateway: _options.value.casAsGateway,
-    strictSSL: _options.value.strictSSL
+    strictSSL: _options.value.strictSSL,
+    logger: log
   }
   const cas = new CAS(casOptions)
 
@@ -93,14 +100,13 @@ function casPlugin (server, options) {
   function gethandler (request, reply) {
     const ticket = request.query.ticket
     if (!ticket) {
-      debug('No ticket query parameter supplied to CAS handler end point')
+      log.trace('No ticket query parameter supplied to CAS handler end point')
       const boom = Boom.badRequest('Missing ticket parameter')
       return addHeaders(request, reply(boom))
     }
 
     return cas.validateServiceTicket(ticket).then(function (result) {
-      debug('Service ticket validated:')
-      debug('%j', result)
+      log.trace('Service ticket validated: %j', result)
       const redirectPath = request.session.requestPath
       delete request.session.requestPath
       request.session.isAuthenticated = true
@@ -115,8 +121,8 @@ function casPlugin (server, options) {
       return addHeaders(request, reply(result)).redirect(redirectPath)
     })
     .catch(function caught (error) {
-      debug('Service ticket validation failed:')
-      debug('%j', error)
+      log.error('Service ticket validation failed: %s', error.message)
+      log.debug(error.stack)
       return addHeaders(request, reply(Boom.forbidden(error.message)))
     })
   }
@@ -138,7 +144,7 @@ function casPlugin (server, options) {
   scheme.authenticate = function casAuth (request, reply) {
     const session = request.session
     if (!session) {
-      debug('No session provider registered!')
+      log.trace('No session provider registered!')
       return reply(Boom.notImplemented(
         'hapi-cas requires a registered Hapi session provider'
       ))
@@ -148,14 +154,14 @@ function casPlugin (server, options) {
       username: session.username,
       attributes: session.attributes
     }
-    debug('Credentials: %j', credentials)
+    log.trace('Credentials: %j', credentials)
 
     if (session.isAuthenticated) {
-      debug('User authenticated by session lookup')
+      log.trace('User authenticated by session lookup')
       return reply.continue({credentials: credentials})
     }
 
-    debug('Redirecting auth to: %s', cas.loginUrl)
+    log.trace('Redirecting auth to: %s', cas.loginUrl)
     session.requestPath = request.path
     return addHeaders(
       request,
