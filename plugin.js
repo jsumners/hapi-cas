@@ -110,7 +110,7 @@ function casPlugin (server, options) {
       const redirectPath = request.session.requestPath
       delete request.session.requestPath
       request.session.isAuthenticated = true
-      request.session.username = result.user
+      request.session.username = result.user.toLowerCase()
       request.session.attributes = result.attributes || {}
 
       // Save raw cas result for processing by client
