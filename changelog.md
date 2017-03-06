@@ -1,3 +1,7 @@
+### 0.7.0
++ Update dependencies.
++ [breaking] Set the session `username` attribute to all lower case.
+
 ### 0.6.0
 + Update dependencies.
 + Migrate documentation to api.md document.
