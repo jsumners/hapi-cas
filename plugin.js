@@ -28,6 +28,10 @@ let log = require('abstract-logging')
  *  Example: <tt>https://app.example.com/</tt>
  * @property {string} endPointPath The URI path where your application will
  *  listen for incoming CAS protocol messages. Example: <tt>/casHandler</tt>
+ * @property {string} [defaultRedirectUrl] If the user bookmarks the remote
+ * CAS server login URL, then a session will not exist to get a redirect
+ * path from. Set this to define a default redirect URL in these cases.
+ * Default: `localAppUrl` value
  * @property {array} [includeHeaders=['cookie']] The headers to include in
  *  redirections. This list <em>must</em> include the header your session
  *  manager uses for tracking session identifiers.
@@ -46,6 +50,7 @@ const optsSchema = Joi.object().keys({
   casAsGateway: Joi.boolean().default(false),
   localAppUrl: Joi.string().uri({scheme: ['http', 'https']}).required(),
   endPointPath: Joi.string().regex(/^\/[\w\W/]+\/?$/).required(),
+  defaultRedirectUrl: Joi.string().optional(),
   includeHeaders: Joi.array().items(Joi.string()).default(['cookie']),
   strictSSL: Joi.boolean().default(true),
   saveRawCAS: Joi.boolean().default(false),
@@ -107,8 +112,8 @@ function casPlugin (server, options) {
 
     return cas.validateServiceTicket(ticket).then(function (result) {
       log.trace('Service ticket validated: %j', result)
-      const redirectPath = request.session.requestPath
-      delete request.session.requestPath
+      const redirectPath = request.session.requestPath || _options.value.localAppUrl
+      request.session.requestPath = undefined
       request.session.isAuthenticated = true
       request.session.username = result.user.toLowerCase()
       request.session.attributes = result.attributes || {}
