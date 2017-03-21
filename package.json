@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "abstract-logging": "^1.0.0",
-    "boom": "^4.2.0",
+    "boom": "^4.3.0",
     "hoek": "^4.1.0",
     "joi": "^10.2.2",
     "simple-cas-interface": "^1.0.2"
@@ -26,8 +26,8 @@
     "hapi": "^16.1.0",
     "hapi-easy-session": "^0.2.2",
     "jsdoc-to-markdown": "^3.0.0",
-    "pino": "^4.0.2",
-    "request": "^2.80.0",
-    "standard": "^9.0.0"
+    "pino": "^4.1.2",
+    "request": "^2.81.0",
+    "standard": "^9.0.2"
   }
 }
