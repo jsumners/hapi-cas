@@ -1,3 +1,7 @@
+### 0.8.0
++ Update dependencies.
++ Fix not being redirected when validating tickets on a new session.
+
 ### 0.7.0
 + Update dependencies.
 + [breaking] Set the session `username` attribute to all lower case.
@@ -23,7 +27,7 @@
   asynchronous method. As a result, the test application for `hapi-cas` was
   failing and the documentation for usage was incorrect. This version updates
   the documentation to show a cheap way of avoiding [issue #6][i6].
-  
+
   While this isn't really an issue with `hapi-cas`, it is annoying enough that
   we are bumping the release version so that you know a radical change has
   occurred.
