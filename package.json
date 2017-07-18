@@ -15,6 +15,11 @@
   ],
   "author": "James Sumners",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jsumners/hapi-cas.git"
+  },
+  "homepage": "https://github.com/jsumners/hapi-cas#readme",
   "dependencies": {
     "abstract-logging": "^1.0.0",
     "boom": "^5.1.0",
