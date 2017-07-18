@@ -17,17 +17,17 @@
   "license": "MIT",
   "dependencies": {
     "abstract-logging": "^1.0.0",
-    "boom": "^4.3.0",
-    "hoek": "^4.1.0",
-    "joi": "^10.2.2",
+    "boom": "^5.1.0",
+    "hoek": "^4.2.0",
+    "joi": "^10.6.0",
     "simple-cas-interface": "^1.0.2"
   },
   "devDependencies": {
-    "hapi": "^16.1.0",
-    "hapi-easy-session": "^0.2.2",
+    "hapi": "^16.4.3",
+    "hapi-easy-session": "^1.0.0",
     "jsdoc-to-markdown": "^3.0.0",
-    "pino": "^4.1.2",
+    "pino": "^4.7.1",
     "request": "^2.81.0",
-    "standard": "^9.0.2"
+    "standard": "^10.0.2"
   }
 }
