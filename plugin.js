@@ -5,6 +5,7 @@ const CAS = require('simple-cas-interface')
 const Hoek = require('hoek')
 const Joi = require('joi')
 const Boom = require('boom')
+const dotProp = require('dot-prop')
 let log = require('abstract-logging')
 
 /**
@@ -58,7 +59,6 @@ const optsSchema = Joi.object().keys({
   includeHeaders: Joi.array().items(Joi.string()).default(['cookie']),
   strictSSL: Joi.boolean().default(true),
   saveRawCAS: Joi.boolean().default(false),
-  // sessionCredentialsMappings: Joi.number().required(),
   sessionCredentialsMappings: Joi.array().items(Joi.object().keys({
     sessionAttribute: Joi.string(),
     credentialsAttribute: Joi.string()
@@ -169,9 +169,8 @@ function casPlugin (server, options) {
       attributes: session.attributes
     }
     if (_options.value.sessionCredentialsMappings) {
-      const dotProp = require('dot-prop')
-      for (let mapping of _options.value.sessionCredentialsMappings) {
-        dotProp.set(credentials, mapping.credentialsAttribute, dotProp.get(session, mapping.sessionAttribute))
+      for (let i = 0; i < _options.value.sessionCredentialsMappings.length; i++) {
+        dotProp.set(credentials, _options.value.sessionCredentialsMappings[i].credentialsAttribute, dotProp.get(session, _options.value.sessionCredentialsMappings[i].sessionAttribute))
       }
     }
     log.trace('Credentials: %j', credentials)
