@@ -1,3 +1,6 @@
+### 0.8.1
++ See [https://github.com/jsumners/hapi-cas/releases](https://github.com/jsumners/hapi-cas/releases) from here on for the changelog
+
 ### 0.8.0
 + Update dependencies.
 + Fix not being redirected when validating tickets on a new session.

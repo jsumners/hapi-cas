@@ -1,6 +1,6 @@
 {
   "name": "hapi-cas",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "An authorization plugin for Hapi that implements JASIG CAS authentication.",
   "main": "plugin.js",
   "scripts": {
