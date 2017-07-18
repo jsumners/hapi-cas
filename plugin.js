@@ -39,10 +39,10 @@ let log = require('abstract-logging')
  *  valid remote SSL certificates or not.
  * @property {boolean} [saveRawCAS=false] If true the CAS result will be
  *  saved into session.rawCas
- * @property {Array} [sessionCredentialsMappings=undefined] An array of arrays
- *  where the values of the attribute of `request.session` listed in array[0]
- *  will be mapped to the attribute of `request.auth.credentials` listed in
- *  array[1].
+ * @property {Array} [sessionCredentialsMappings=undefined] An array of objects
+ *  where the values of the attribute of `request.session` listed in
+ *  `object.sessionAttribute` will be mapped to the attribute of
+ *  `request.auth.credentials` listed in `object.credentialsAttribute`.
  * @property {object} [logger=undefined] An instance of a logger that conforms
  *  to the Log4j interface. We recommend {@link https://npm.im/pino}
  */
@@ -58,7 +58,11 @@ const optsSchema = Joi.object().keys({
   includeHeaders: Joi.array().items(Joi.string()).default(['cookie']),
   strictSSL: Joi.boolean().default(true),
   saveRawCAS: Joi.boolean().default(false),
-  sessionCredentialsMappings: Joi.array().optional(),
+  // sessionCredentialsMappings: Joi.number().required(),
+  sessionCredentialsMappings: Joi.array().items(Joi.object().keys({
+    sessionAttribute: Joi.string(),
+    credentialsAttribute: Joi.string()
+  }).requiredKeys('sessionAttribute', 'credentialsAttribute')).optional(),
   logger: Joi.object().optional()
 })
 
@@ -82,7 +86,7 @@ const optsSchema = Joi.object().keys({
 function casPlugin (server, options) {
   Hoek.assert(options, 'Missing CAS auth scheme options')
   const _options = Joi.validate(options, optsSchema)
-  Hoek.assert(_options, 'Options object does not pass schema validation')
+  Hoek.assert(!_options.error, 'Options object does not pass schema validation: ' + (_options.error ? _options.error.message : ''))
   log = (_options.value.logger)
     ? _options.value.logger.child({module: 'hapi-cas'})
     : log
@@ -167,7 +171,7 @@ function casPlugin (server, options) {
     if (_options.value.sessionCredentialsMappings) {
       const dotProp = require('dot-prop')
       for (let mapping of _options.value.sessionCredentialsMappings) {
-        dotProp.set(credentials, mapping[1], dotProp.get(session, mapping[0]))
+        dotProp.set(credentials, mapping.credentialsAttribute, dotProp.get(session, mapping.sessionAttribute))
       }
     }
     log.trace('Credentials: %j', credentials)
