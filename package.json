@@ -23,6 +23,7 @@
   "dependencies": {
     "abstract-logging": "^1.0.0",
     "boom": "^5.1.0",
+    "dot-prop": "^4.1.1",
     "hoek": "^4.2.0",
     "joi": "^10.6.0",
     "simple-cas-interface": "^1.0.2"

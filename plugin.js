@@ -39,6 +39,12 @@ let log = require('abstract-logging')
  *  valid remote SSL certificates or not.
  * @property {boolean} [saveRawCAS=false] If true the CAS result will be
  *  saved into session.rawCas
+ * @property {Array} [sessionCredentialsMappings=undefined] An array of arrays
+ *  where the values of the attribute of `request.session` listed in array[0]
+ *  will be mapped to the attribute of `request.auth.credentials` listed in
+ *  array[1].  For example, if sessionCredentialsMappings contains
+ *  ['foo.bar', 'baz'] then `request.auth.credentials.baz` will contain the
+ *  same data as `request.session.foo.bar`.
  * @property {object} [logger=undefined] An instance of a logger that conforms
  *  to the Log4j interface. We recommend {@link https://npm.im/pino}
  */
@@ -54,6 +60,7 @@ const optsSchema = Joi.object().keys({
   includeHeaders: Joi.array().items(Joi.string()).default(['cookie']),
   strictSSL: Joi.boolean().default(true),
   saveRawCAS: Joi.boolean().default(false),
+  sessionCredentialsMappings: Joi.array().optional(),
   logger: Joi.object().optional()
 })
 
@@ -125,11 +132,11 @@ function casPlugin (server, options) {
 
       return addHeaders(request, reply(result)).redirect(redirectPath)
     })
-    .catch(function caught (error) {
-      log.error('Service ticket validation failed: %s', error.message)
-      log.debug(error.stack)
-      return addHeaders(request, reply(Boom.forbidden(error.message)))
-    })
+      .catch(function caught (error) {
+        log.error('Service ticket validation failed: %s', error.message)
+        log.debug(error.stack)
+        return addHeaders(request, reply(Boom.forbidden(error.message)))
+      })
   }
 
   server.route({
@@ -159,6 +166,12 @@ function casPlugin (server, options) {
       username: session.username,
       attributes: session.attributes
     }
+    if (_options.value.sessionCredentialsMappings) {
+      const dotProp = require('dot-prop')
+      for (let mapping of _options.value.sessionCredentialsMappings) {
+        dotProp.set(credentials, mapping[1], dotProp.get(session, mapping[0]))
+      }
+    }
     log.trace('Credentials: %j', credentials)
 
     if (session.isAuthenticated) {
@@ -172,7 +185,7 @@ function casPlugin (server, options) {
       request,
       reply('cas redirect', null, {credentials: credentials})
     )
-    .redirect(cas.loginUrl)
+      .redirect(cas.loginUrl)
   }
 
   return scheme
