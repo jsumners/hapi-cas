@@ -42,9 +42,7 @@ let log = require('abstract-logging')
  * @property {Array} [sessionCredentialsMappings=undefined] An array of arrays
  *  where the values of the attribute of `request.session` listed in array[0]
  *  will be mapped to the attribute of `request.auth.credentials` listed in
- *  array[1].  For example, if sessionCredentialsMappings contains
- *  ['foo.bar', 'baz'] then `request.auth.credentials.baz` will contain the
- *  same data as `request.session.foo.bar`.
+ *  array[1].
  * @property {object} [logger=undefined] An instance of a logger that conforms
  *  to the Log4j interface. We recommend {@link https://npm.im/pino}
  */
