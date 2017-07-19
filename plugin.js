@@ -41,15 +41,22 @@ let log = require('abstract-logging')
  * @property {boolean} [saveRawCAS=false] If true the CAS result will be
  *  saved into session.rawCas
  * @property {Array} [sessionCredentialsMappings=undefined] An array of objects
- *  where the values of the attribute of `request.session` listed in
- *  `object.sessionAttribute` will be mapped to the attribute of
- *  `request.auth.credentials` listed in `object.credentialsAttribute`.
+ *  where the values of the attribute of <code>request.session</code> listed
+ *  in<code>object.sessionAttribute</code> will be mapped to the attribute of
+ *  <code>request.auth.credentials</code> listed in
+ *  <code>object.credentialsAttribute</code>.  For example, if
+ *  <code>sessionCredentialsMappings</code> contains
+ *  <code>{sessionAttribute: 'foo.bar', credentialsAttribute: 'baz'}</code>
+ *  then <code>request.auth.credentials.baz</code> will contain the same data
+ *  as <code>request.session.foo.bar</code>. <strong>NOTE</strong>: dot
+ *  notation in the <code>sessionAttribute</code> and
+ *  <code>credentialsAttribute</code> attributes is supported.
  * @property {object} [logger=undefined] An instance of a logger that conforms
  *  to the Log4j interface. We recommend {@link https://npm.im/pino}
  */
 
 const optsSchema = Joi.object().keys({
-  casServerUrl: Joi.string().uri({sheme: ['http', 'https']}).required(),
+  casServerUrl: Joi.string().uri({scheme: ['http', 'https']}).required(),
   casProtocolVersion: Joi.number().valid([1, 2, 3]).default(2.0),
   casRequestMethod: Joi.string().valid(['GET', 'POST']).default('GET'),
   casAsGateway: Joi.boolean().default(false),
