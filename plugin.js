@@ -5,6 +5,7 @@ const CAS = require('simple-cas-interface')
 const Hoek = require('hoek')
 const Joi = require('joi')
 const Boom = require('boom')
+const dotProp = require('dot-prop')
 let log = require('abstract-logging')
 
 /**
@@ -39,6 +40,10 @@ let log = require('abstract-logging')
  *  valid remote SSL certificates or not.
  * @property {boolean} [saveRawCAS=false] If true the CAS result will be
  *  saved into session.rawCas
+ * @property {Array} [sessionCredentialsMappings=undefined] An array of objects
+ *  where the values of the attribute of `request.session` listed in
+ *  `object.sessionAttribute` will be mapped to the attribute of
+ *  `request.auth.credentials` listed in `object.credentialsAttribute`.
  * @property {object} [logger=undefined] An instance of a logger that conforms
  *  to the Log4j interface. We recommend {@link https://npm.im/pino}
  */
@@ -54,6 +59,10 @@ const optsSchema = Joi.object().keys({
   includeHeaders: Joi.array().items(Joi.string()).default(['cookie']),
   strictSSL: Joi.boolean().default(true),
   saveRawCAS: Joi.boolean().default(false),
+  sessionCredentialsMappings: Joi.array().items(Joi.object().keys({
+    sessionAttribute: Joi.string(),
+    credentialsAttribute: Joi.string()
+  }).requiredKeys('sessionAttribute', 'credentialsAttribute')).optional(),
   logger: Joi.object().optional()
 })
 
@@ -77,7 +86,7 @@ const optsSchema = Joi.object().keys({
 function casPlugin (server, options) {
   Hoek.assert(options, 'Missing CAS auth scheme options')
   const _options = Joi.validate(options, optsSchema)
-  Hoek.assert(_options, 'Options object does not pass schema validation')
+  Hoek.assert(!_options.error, 'Options object does not pass schema validation: ' + (_options.error ? _options.error.message : ''))
   log = (_options.value.logger)
     ? _options.value.logger.child({module: 'hapi-cas'})
     : log
@@ -125,11 +134,11 @@ function casPlugin (server, options) {
 
       return addHeaders(request, reply(result)).redirect(redirectPath)
     })
-    .catch(function caught (error) {
-      log.error('Service ticket validation failed: %s', error.message)
-      log.debug(error.stack)
-      return addHeaders(request, reply(Boom.forbidden(error.message)))
-    })
+      .catch(function caught (error) {
+        log.error('Service ticket validation failed: %s', error.message)
+        log.debug(error.stack)
+        return addHeaders(request, reply(Boom.forbidden(error.message)))
+      })
   }
 
   server.route({
@@ -159,6 +168,11 @@ function casPlugin (server, options) {
       username: session.username,
       attributes: session.attributes
     }
+    if (_options.value.sessionCredentialsMappings) {
+      for (let i = 0; i < _options.value.sessionCredentialsMappings.length; i++) {
+        dotProp.set(credentials, _options.value.sessionCredentialsMappings[i].credentialsAttribute, dotProp.get(session, _options.value.sessionCredentialsMappings[i].sessionAttribute))
+      }
+    }
     log.trace('Credentials: %j', credentials)
 
     if (session.isAuthenticated) {
@@ -172,7 +186,7 @@ function casPlugin (server, options) {
       request,
       reply('cas redirect', null, {credentials: credentials})
     )
-    .redirect(cas.loginUrl)
+      .redirect(cas.loginUrl)
   }
 
   return scheme

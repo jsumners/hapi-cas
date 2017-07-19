@@ -84,5 +84,6 @@ with the scheme name 'cas'.
 | includeHeaders | <code>array</code> | <code>[&#x27;cookie&#x27;]</code> | The headers to include in  redirections. This list <em>must</em> include the header your session  manager uses for tracking session identifiers. |
 | strictSSL | <code>boolean</code> | <code>true</code> | Determines if the client will require  valid remote SSL certificates or not. |
 | saveRawCAS | <code>boolean</code> | <code>false</code> | If true the CAS result will be  saved into session.rawCas |
+| sessionCredentialsMappings | <code>Array</code> |  | An array of objects where the values of the attribute of <code>request.session</code> listed in<code>object.sessionAttribute</code> will be mapped to the attribute of <code>request.auth.credentials</code> listed in <code>object.credentialsAttribute</code>.  For example, if <code>sessionCredentialsMappings</code> contains <code>{sessionAttribute: 'foo.bar', credentialsAttribute: 'baz'}</code> then <code>request.auth.credentials.baz</code> will contain the same data as <code>request.session.foo.bar</code>. <strong>NOTE</strong>: dot notation in the array elements is supported. |
 | logger | <code>object</code> |  | An instance of a logger that conforms  to the Log4j interface. We recommend [https://npm.im/pino](https://npm.im/pino) |
 
