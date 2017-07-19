@@ -48,7 +48,7 @@ plugin is known to work. But any plugin that provides
 | Param | Type | Description |
 | --- | --- | --- |
 | server | <code>object</code> | A Hapi server instance. |
-| options | <code>[PluginOptions](#PluginOptions)</code> | The options for the CAS authentication plugin. |
+| options | [<code>PluginOptions</code>](#PluginOptions) | The options for the CAS authentication plugin. |
 
 <a name="register"></a>
 
@@ -81,9 +81,10 @@ with the scheme name 'cas'.
 | casAsGateway | <code>boolean</code> | <code>false</code> | Indicates if the remote CAS server  should use its gateway method of operation. |
 | localAppUrl | <code>string</code> |  | The base URL for your local applications. It  <em>should</em> be an HTTPS URL. But it <em>can</em> be HTTP if the remote  server isn't fully protocol compliant.  Example: <tt>https://app.example.com/</tt> |
 | endPointPath | <code>string</code> |  | The URI path where your application will  listen for incoming CAS protocol messages. Example: <tt>/casHandler</tt> |
+| defaultRedirectUrl | <code>string</code> |  | If the user bookmarks the remote CAS server login URL, then a session will not exist to get a redirect path from. Set this to define a default redirect URL in these cases. Default: `localAppUrl` value |
 | includeHeaders | <code>array</code> | <code>[&#x27;cookie&#x27;]</code> | The headers to include in  redirections. This list <em>must</em> include the header your session  manager uses for tracking session identifiers. |
 | strictSSL | <code>boolean</code> | <code>true</code> | Determines if the client will require  valid remote SSL certificates or not. |
 | saveRawCAS | <code>boolean</code> | <code>false</code> | If true the CAS result will be  saved into session.rawCas |
-| sessionCredentialsMappings | <code>Array</code> |  | An array of objects where the values of the attribute of <code>request.session</code> listed in<code>object.sessionAttribute</code> will be mapped to the attribute of <code>request.auth.credentials</code> listed in <code>object.credentialsAttribute</code>.  For example, if <code>sessionCredentialsMappings</code> contains <code>{sessionAttribute: 'foo.bar', credentialsAttribute: 'baz'}</code> then <code>request.auth.credentials.baz</code> will contain the same data as <code>request.session.foo.bar</code>. <strong>NOTE</strong>: dot notation in the array elements is supported. |
+| sessionCredentialsMappings | <code>Array</code> |  | An array of objects  where the values of the attribute of <code>request.session</code> listed  in <code>object.sessionAttribute</code> will be mapped to the attribute of  <code>request.auth.credentials</code> listed in  <code>object.credentialsAttribute</code>.  For example, if  <code>sessionCredentialsMappings</code> contains  <code>{sessionAttribute: 'foo.bar', credentialsAttribute: 'baz'}</code>  then <code>request.auth.credentials.baz</code> will contain the same data  as <code>request.session.foo.bar</code>. <strong>NOTE</strong>: dot  notation in the <code>sessionAttribute</code> and  <code>credentialsAttribute</code> attributes is supported. |
 | logger | <code>object</code> |  | An instance of a logger that conforms  to the Log4j interface. We recommend [https://npm.im/pino](https://npm.im/pino) |
 
