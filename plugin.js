@@ -42,7 +42,7 @@ let log = require('abstract-logging')
  *  saved into session.rawCas
  * @property {Array} [sessionCredentialsMappings=undefined] An array of objects
  *  where the values of the attribute of <code>request.session</code> listed
- *  in<code>object.sessionAttribute</code> will be mapped to the attribute of
+ *  in <code>object.sessionAttribute</code> will be mapped to the attribute of
  *  <code>request.auth.credentials</code> listed in
  *  <code>object.credentialsAttribute</code>.  For example, if
  *  <code>sessionCredentialsMappings</code> contains
