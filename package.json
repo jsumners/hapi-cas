@@ -22,10 +22,10 @@
   "homepage": "https://github.com/jsumners/hapi-cas#readme",
   "dependencies": {
     "abstract-logging": "^1.0.0",
-    "boom": "^5.1.0",
+    "boom": "^6.0.0",
     "dot-prop": "^4.1.1",
-    "hoek": "^4.2.0",
-    "joi": "^10.6.0",
+    "hoek": "^5.0.3",
+    "joi": "^13.0.0",
     "simple-cas-interface": "^1.0.2"
   },
   "devDependencies": {
